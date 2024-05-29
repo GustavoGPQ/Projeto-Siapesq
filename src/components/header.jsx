@@ -12,7 +12,7 @@ export default function Header(){
                     <Link to={"/register"}>Registro</Link>
                 </li>
                 <li>
-                    <Link></Link>
+                    
                 </li>
             </ul>
         </header>

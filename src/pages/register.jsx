@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import "../pages/App.css"
-import siapesq from "../img/siapesq.png"
+import avatar from "../img/avatar.png"
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/header';
+import InputMask from 'react-input-mask';
 
 export default function Home() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [tel, setTelefone] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = () =>{
-    navigate("/register");
+  const handlehome= () =>{
+    navigate("/");
+  }
+
+  const handleChange = (e) =>{
+    setTelefone(e.target.value)
   }
 
   const handleSubmit = (event) => {
@@ -20,13 +26,14 @@ export default function Home() {
     console.log('Usuário:', username);
     console.log('Email:', email);
     console.log('Senha:', password);
+    console.log('Telefone:', tel);
   };
 
   return (
     <>
       <div className="registro-container">
         <div>
-        <img src={siapesq} alt="Logo" className="logo" />
+        <img src={avatar} alt="Logo" className="logo" />
         </div>
         <h2>Seja bem vindo!</h2>
         <form onSubmit={handleSubmit}>
@@ -49,12 +56,15 @@ export default function Home() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="telefone">Senha:</label>
-            <input
-              type="tel"
-              id="telefone"
-              value={telefone}
-              onChange={(event) => setPassword(event.target.value)}
+            <label htmlFor="tel">Telefone:</label>
+            <InputMask
+                mask="(99) 99999-9999"
+                maskChar=""
+                id="telefone"
+                type="tel"
+                value={tel}
+                onChange={handleChange}
+                placeholder="(xx) xxxxx-xxxx"
             />
           </div>
           <div className="form-group">
@@ -66,10 +76,9 @@ export default function Home() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-          <button type="submit" onClick={handleRegister}>Registrar</button>
+          <button type="submit" onClick={handlehome}>Registrar</button>
         </form>
       </div>
     </>
   );
 }
-

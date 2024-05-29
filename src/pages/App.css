@@ -24,7 +24,7 @@ body{
 
 h2 {
   margin-bottom: 30px;
-  color: #333;
+  color: white;
 }
 
 .form-group {
@@ -32,17 +32,18 @@ h2 {
 
 }
 
-label {
+label{
   display: block;
   font-weight: bold;
   margin-bottom: 5px;
-  color: #333;
+  color:white;
   
 }
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="tel"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
