@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
+import React, {useState} from "react";
 import "../pages/App.css"
 import avatar from "../img/avatar.png"
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/header';
 import InputMask from 'react-input-mask';
 
-export default function Home() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [tel, setTelefone] = useState('');
-  const navigate = useNavigate();
 
-  const handlehome= () =>{
-    navigate("/");
-  }
+export default function Register(){
 
-  const handleChange = (e) =>{
-    setTelefone(e.target.value)
-  }
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [tel, setTelefone] = useState('');
+    const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados do formulário para o backend
-    console.log('Usuário:', username);
-    console.log('Email:', email);
-    console.log('Senha:', password);
-    console.log('Telefone:', tel);
-  };
+    const handlehome= () =>{
+        navigate("/");
+    }
 
-  return (
-    <>
+    const handleChange = (e) =>{
+        setTelefone(e.target.value)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Aqui você pode adicionar a lógica para enviar os dados do formulário para o backend
+        console.log('Usuário:', username);
+        console.log('Email:', email);
+        console.log('Senha:', password);
+        console.log('Telefone:', tel);
+    };
+
+    return(
+        <>
+             <>
       <div className="registro-container">
         <div>
         <img src={avatar} alt="Logo" className="logo" />
@@ -80,5 +83,6 @@ export default function Home() {
         </form>
       </div>
     </>
-  );
+        </>
+    )
 }

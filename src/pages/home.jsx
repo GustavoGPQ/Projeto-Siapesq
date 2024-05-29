@@ -4,6 +4,8 @@ import siapesq from "../img/siapesq.png"
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/header';
 
+import connection from '..//server/axios';
+
 export default function Home() {
   //const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -18,8 +20,13 @@ export default function Home() {
     event.preventDefault();
     // Aqui você pode adicionar a lógica para enviar os dados do formulário para o backend
     // console.log('Usuário:', username);
-    console.log('Email:', email);
-    console.log('Senha:', password);
+    // console.log('Email:', email);
+    // console.log('Senha:', password);
+
+    connection.post("/login",{
+      "email" : email,
+      "senha" : password
+    })
   };
 
   return (
