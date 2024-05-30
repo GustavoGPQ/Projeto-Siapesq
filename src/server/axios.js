@@ -1,7 +1,7 @@
-const axios = require("axios");
+import axios from "axios";
 
 let connection = axios.create({
     baseURL: "http://localhost:3001"
 })
 
-export default connection
+export default connection;

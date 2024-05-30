@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: inter;
+
+}
+/* 
+body{
+  background: linear-gradient(45deg, #009BD1, #00FF75);
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+.registro-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  width: 15%;
+  height: 43rem;
+  border-radius: 8px;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.795);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #002244;
+}
+
+.registro-container form{
+  background-color: white;
+  border-radius:  100px 0px 0px 0px;
+  height: 30rem;
+}
+
+
+h2 {
+  margin-bottom: 30px;
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+}
+
+label{
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  width: 70%;
+  margin: 10% auto 0 auto;
+}
+
+label input{
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 2px solid gray;
+  outline: none;
+  margin-top: 3%;
+  padding: .2rem;
+  font-size: larger;
+}
+
+
+.logo{
+  width: 40%;
+
+}
+
+.loginButton, .registerButton{
+  padding: .4rem;
+  width: 60%;
+  font-size: larger;
+  background-color: #002244;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.registerButton{
+  margin-top: 5%;
+}
+
+.registerLink a{
+  color: #002244;
+  font-weight: 800;
+  text-decoration: none;
+}

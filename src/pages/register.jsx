@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import "../pages/App.css"
+import "../style/App.css"
 import avatar from "../img/avatar.png"
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/header';
 import InputMask from 'react-input-mask';
 
 
@@ -32,57 +31,59 @@ export default function Register(){
     };
 
     return(
-        <>
-             <>
-      <div className="registro-container">
-        <div>
-        <img src={avatar} alt="Logo" className="logo" />
+      <>
+        <div className="registro-container">
+          <div>
+          <img src={avatar} alt="Logo" className="logo" />
+          </div>
+          <h2>Seja bem vindo!</h2>
+          <form onSubmit={handleSubmit}>
+              <label>
+                <span>
+                  Nome de usuário
+                </span>
+                <input
+                  type="text"
+                  id="username"
+                  placeholder="Digite o seu nome"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                />
+              </label>
+              <label>
+                <span>Email</span>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  placeholder="Digite o seu email"
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              </label>
+              <label>
+                <span>Telefone</span>
+                <InputMask
+                    mask="(99) 99999-9999"
+                    maskChar=""
+                    id="telefone"
+                    type="tel"
+                    value={tel}
+                    onChange={handleChange}
+                    placeholder="(xx) xxxxx-xxxx"
+                />
+                </label>
+              <label htmlFor="password">
+                <span>Senha</span>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+              </label>
+            <button type="submit" className="registerButton" onClick={handlehome}>Registrar</button>
+          </form>
         </div>
-        <h2>Seja bem vindo!</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Nome de usuário:</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="tel">Telefone:</label>
-            <InputMask
-                mask="(99) 99999-9999"
-                maskChar=""
-                id="telefone"
-                type="tel"
-                value={tel}
-                onChange={handleChange}
-                placeholder="(xx) xxxxx-xxxx"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Senha:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </div>
-          <button type="submit" onClick={handlehome}>Registrar</button>
-        </form>
-      </div>
-    </>
-        </>
+      </>
     )
 }
