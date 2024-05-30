@@ -3,7 +3,9 @@ import "../style/App.css"
 import avatar from "../img/avatar.png"
 import { useNavigate } from 'react-router-dom';
 import InputMask from 'react-input-mask';
-
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 export default function Register(){
 
@@ -11,6 +13,7 @@ export default function Register(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [tel, setTelefone] = useState('');
+    const [switcher,setSwitcher] = useState(false);
     const navigate = useNavigate();
 
     const handlehome= () =>{
@@ -72,16 +75,24 @@ export default function Register(){
                     placeholder="(xx) xxxxx-xxxx"
                 />
                 </label>
-              <label htmlFor="password">
+              <label>
                 <span>Senha</span>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
+                <span className="password-input">
+                  <input
+                    type={switcher? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                  <FontAwesomeIcon 
+                    icon={switcher ? faEye : faEyeSlash }
+                    onClick={() => setSwitcher(!switcher)}
+                    style={{cursor:"pointer"}}
+                  />
+                </span>
               </label>
             <button type="submit" className="registerButton" onClick={handlehome}>Registrar</button>
+            <p className='loginLink'>Já tem uma conta ? <Link to={"/login"}>Clique aqui !</Link></p>
           </form>
         </div>
       </>

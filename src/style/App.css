@@ -23,7 +23,7 @@ body{
   text-align: center;
   flex-direction: column;
   width: 15%;
-  height: 43rem;
+  height: 48rem;
   border-radius: 8px;
   margin: auto;
   background-color: rgba(0, 0, 0, 0.795);
@@ -34,7 +34,7 @@ body{
 .registro-container form{
   background-color: white;
   border-radius:  100px 0px 0px 0px;
-  height: 30rem;
+  height: 35rem;
 }
 
 
@@ -47,6 +47,7 @@ h2 {
   margin-bottom: 20px;
 
 }
+
 
 label{
   display: flex;
@@ -65,6 +66,11 @@ label input{
   margin-top: 3%;
   padding: .2rem;
   font-size: larger;
+}
+
+.password-input{
+  display: flex;
+  align-items: center;
 }
 
 
@@ -88,7 +94,11 @@ label input{
   margin-top: 5%;
 }
 
-.registerLink a{
+.registerLink, .loginLink{
+  margin-top: 12%;
+}
+
+.registerLink a, .loginLink a{
   color: #002244;
   font-weight: 800;
   text-decoration: none;
