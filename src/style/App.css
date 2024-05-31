@@ -106,7 +106,9 @@ label input{
 
 @media only screen and (max-width:1440px){
   .registro-container{
-    width: 27%;
-
+    width: 30%;
+  }
+  .registro-container form{
+    height: 43rem;
   }
 }

@@ -27,7 +27,10 @@ export const createUsers = async (req, res) => {
   try {
     const criptsenha = await bcrypt.hash(senha, 10)
     const usuarioNovo = await dbKnex("usuarios").insert({ nome, senha:criptsenha, email, telefone });
-    res.status(200).json({ usuarioNovo });
+    res.status(200).json({ 
+      usuarioNovo,
+      "message":"usuario criado com sucesso !"
+     });
   } catch (error) {
     res.status(400).json({ message: "Erro ao cadastrar", error });
   }
@@ -37,13 +40,14 @@ export const createUsers = async (req, res) => {
 //---------------LOGIN USERS-------------------------
 
 export const loginUser = async (req,res) => {
-   const {  senha, email  } = req.body;
+  const {  senha, email  } = req.body;
   
   const usuarioLog = await dbKnex("usuarios").where({ email }).first(); //parte mais importante - armazena o usuario
   console.log(usuarioLog);
 
   if (!usuarioLog) {
     res.status(400).json({ message: "Esse usuario não existe" });
+    return;
   }
 
   const senhadcpt = await bcrypt.compare(senha, usuarioLog.senha)
@@ -51,6 +55,7 @@ export const loginUser = async (req,res) => {
 
   if(senhadcpt == false){
     res.status(400).json({ message: "Senha incorreta" });
+    return;
   }
  
 

@@ -1,23 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import "../style/App.css"
 import siapesq from "../img/siapesq.png"
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
+import connection from "../server/axios.mjs";
+import { useNavigate } from 'react-router-dom';
+import {TokenContext} from "../context/TokenContext";
 
 export default function Login() {
-  //const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [switcher,setSwitcher] = useState(false);
-  
+  const [errorMessage,setErrorMessage] = useState("");
+  const navigate = useNavigate();
+  const {token,setToken} = useContext(TokenContext);
+
+  useEffect(() =>{
+    if(localStorage.getItem("userToken")){
+      navigate("/");
+    }
+  },[]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados do formulário para o backend
-    // console.log('Usuário:', username);
-    // console.log('Email:', email);
-    // console.log('Senha:', password);
+    connection.post("/login",{
+      "senha":password,
+      "email":email
+    })
+    .then((res) =>{
+       console.log(res.data);
+      //tratamento para caso o usuário não exista
+      if(res.data.message === "Esse usuario não existe"){
+        setErrorMessage("Esse usuario não existe !");
+        return;
+      }
+
+      //tratamento para caso a senha esteja incorreta
+      if(res.data.message === "Senha incorreta"){
+        setErrorMessage("Senha incorreta !");
+        return;
+      }
+      
+
+
+      setToken(res.data.token);
+      localStorage.setItem("userToken", token);
+      navigate("/");
+    })
+    .catch(err => {
+      console.log(err);
+      return;
+    })
   };
 
   return (
@@ -61,9 +95,9 @@ export default function Login() {
           <br />
           <br />
           <p className='registerLink'>Não tem conta ? <Link to={"/register"}>Clique aqui !</Link></p>
+          <p style={{textAlign:"center",color:"red",fontWeight:"bold"}}>{errorMessage}</p>
         </form>
       </div>
     </>
   );
 }
-

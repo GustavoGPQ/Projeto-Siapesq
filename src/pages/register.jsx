@@ -6,6 +6,7 @@ import InputMask from 'react-input-mask';
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
+import connection from "../server/axios.mjs";
 
 export default function Register(){
 
@@ -16,22 +17,31 @@ export default function Register(){
     const [switcher,setSwitcher] = useState(false);
     const navigate = useNavigate();
 
-    const handlehome= () =>{
-        navigate("/");
-    }
-
     const handleChange = (e) =>{
-        setTelefone(e.target.value)
+      setTelefone(e.target.value)
     }
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-        // Aqui você pode adicionar a lógica para enviar os dados do formulário para o backend
-        console.log('Usuário:', username);
-        console.log('Email:', email);
-        console.log('Senha:', password);
-        console.log('Telefone:', tel);
-    };
+      event.preventDefault();
+
+      //tratamento dos dados para o bando de dados
+      connection.post("/sign",{
+        "nome":username,
+        "senha":password,
+        "email":email,
+        "telefone":tel
+      })
+      .then(res =>{
+        if(res.data.message === "usuario criado com sucesso !"){
+          navigate("/login")
+          return;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return;
+      })
+    }
 
     return(
       <>
@@ -91,7 +101,7 @@ export default function Register(){
                   />
                 </span>
               </label>
-            <button type="submit" className="registerButton" onClick={handlehome}>Registrar</button>
+            <button type="submit" className="registerButton" onClick={handleSubmit}>Registrar</button>
             <p className='loginLink'>Já tem uma conta ? <Link to={"/login"}>Clique aqui !</Link></p>
           </form>
         </div>
