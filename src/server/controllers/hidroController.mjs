@@ -1,4 +1,4 @@
-import dbKnex from '../database/db_config.js'
+import dbKnex from '../database/db_config.mjs'
 
 
 export const createHidro = async (req,res) => {

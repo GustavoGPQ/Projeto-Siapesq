@@ -7,6 +7,7 @@ import Index from "./pages";
 
 export default function App(){
     return(
+        <>
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Index/>}/>
@@ -14,5 +15,11 @@ export default function App(){
                 <Route path="/register" element={<Register/>}/>
             </Routes>
         </BrowserRouter>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+        />
+        
+        </>
     )
 }

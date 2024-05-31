@@ -1,7 +1,7 @@
 import { Router, json } from "express";
-import { createUsers, getUsers, loginUser } from "./controllers/userController.js";
-import { verificaLogin } from "./middleware/autheticator.js";
-import { createHidro2, createHidrocord } from "./controllers/hidroController.js";
+import { createUsers, getUsers, loginUser } from "./controllers/userController.mjs";
+import { verificaLogin } from "./middleware/autheticator.mjs";
+import { createHidro2, createHidrocord } from "./controllers/hidroController.mjs";
 
 const router = Router()
 

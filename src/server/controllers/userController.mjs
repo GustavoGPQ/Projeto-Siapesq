@@ -1,8 +1,6 @@
-import dbKnex from '../database/db_config.js'
+import dbKnex from '../database/db_config.mjs'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-
-
 
 //---------------PUXAR USERS-------------------------
 export const getUsers= async (req,res) => {
@@ -39,10 +37,8 @@ export const createUsers = async (req, res) => {
 //---------------LOGIN USERS-------------------------
 
 export const loginUser = async (req,res) => {
-    const {  senha, email  } = req.body;
-
-
-
+   const {  senha, email  } = req.body;
+  
   const usuarioLog = await dbKnex("usuarios").where({ email }).first(); //parte mais importante - armazena o usuario
   console.log(usuarioLog);
 
