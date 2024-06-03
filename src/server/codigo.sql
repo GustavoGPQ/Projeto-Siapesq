@@ -1,0 +1,28 @@
+DROP DATABASE projeto;
+
+CREATE DATABASE projeto;
+
+USE projeto;
+
+
+CREATE TABLE usuarios(
+id INT PRIMARY KEY AUTO_INCREMENT,
+nome VARCHAR(100) NOT NULL,
+email VARCHAR(100) NOT NULL,
+senha VARCHAR(100) NOT NULL,
+telefone VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE hidro(
+id INT PRIMARY KEY AUTO_INCREMENT,
+nome VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE hidrocord(
+id INT PRIMARY KEY AUTO_INCREMENT,
+hidroid INT,
+latitude FLOAT,
+longitude FLOAT,
+FOREIGN KEY (hidroid) REFERENCES hidro(id)
+);
