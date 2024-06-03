@@ -1,20 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from "react"
 
 export default function Header(){
     return(
-        <header>
-            <ul>
-                <li>
-                    <Link to={"/"}>Págian principal</Link>
-                </li>
-                <li>
-                    <Link to={"/register"}>Registro</Link>
-                </li>
-                <li>
-                    
-                </li>
-            </ul>
+        <header className="header">
+            <h1> SIAPESQ - Sistema de Inteligência Artificial em Pesquisa Ambiental</h1>
         </header>
     )
 }

@@ -7,15 +7,16 @@
   font-family: inter;
 
 }
-/* 
-body{
-  background: linear-gradient(45deg, #009BD1, #00FF75);
-  background-repeat: no-repeat;
-  height: 100vh;
+
+.header{
+  background-color: #002244;
+  color: white;
+  margin-bottom: 5%;
   display: flex;
-  justify-content: center;
   align-items: center;
-} */
+  padding: 2rem;
+  position: relative;
+}
 
 .registro-container {
   display: flex;
@@ -49,7 +50,7 @@ h2 {
 }
 
 
-label{
+.registro-container form label{
   display: flex;
   flex-direction: column;
   text-align: start;
@@ -57,7 +58,7 @@ label{
   margin: 10% auto 0 auto;
 }
 
-label input{
+.registro-container form label input{
   border-top: none;
   border-right: none;
   border-left: none;
@@ -104,11 +105,84 @@ label input{
   text-decoration: none;
 }
 
+.map{
+  display: flex;
+  justify-content: center;
+}
+
+.formCordinatesContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formCordinatesContainer form{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  align-items: center;
+  background-color: #C0C0C0;
+  border-radius: 0 0 8px 8px;
+}
+
+.formCordinatesContainer form label{
+  margin-top: 2%;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
+
+.formCordinatesContainer form label input{
+  outline: none;
+  border-radius: 6px;
+  padding: .5rem;
+  border: gray solid;
+}
+
+.headerForm{
+  position: relative;
+  background-color: #002244;
+  color: white;
+  width: 50%;
+  padding: 1.2rem;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.headerForm .arrowDown{
+  cursor: pointer;
+  position: absolute;
+  right: 5%;
+}
+
+.headerForm:hover .arrowDown{
+  animation-name: moveArrow;
+  animation-duration: 2s;
+  animation-fill-mode:forwards;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
 @media only screen and (max-width:1440px){
   .registro-container{
     width: 30%;
   }
   .registro-container form{
     height: 43rem;
+  }
+}
+
+@keyframes moveArrow{
+  0%{
+    transform: translateY(0);
+  }
+
+  50%{
+    transform: translateY(5px);
+  }
+
+  100%{
+    transform: translateY(-5px);
   }
 }
