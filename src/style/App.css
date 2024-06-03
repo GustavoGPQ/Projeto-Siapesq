@@ -23,7 +23,7 @@
   justify-content: center;
   text-align: center;
   flex-direction: column;
-  width: 15%;
+  width: 23%;
   height: 48rem;
   border-radius: 8px;
   margin: auto;
@@ -77,7 +77,6 @@ h2 {
 
 .logo{
   width: 40%;
-
 }
 
 .loginButton, .registerButton{
@@ -123,6 +122,8 @@ h2 {
   align-items: center;
   background-color: #C0C0C0;
   border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  transition: all .8s;
 }
 
 .formCordinatesContainer form label{
@@ -166,7 +167,7 @@ h2 {
 
 @media only screen and (max-width:1440px){
   .registro-container{
-    width: 30%;
+    width: 36%;
   }
   .registro-container form{
     height: 43rem;

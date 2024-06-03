@@ -4,12 +4,13 @@ import jwt from 'jsonwebtoken'
 
 //---------------PUXAR USERS-------------------------
 export const getUsers= async (req,res) => {
-    try {
-        const usuarios = await dbKnex("usuarios").select("*");
-        res.status(200).json({ usuarios });
-      } catch (error) {
-        res.status(500).json({ message: "CARA, HOJE NÃO", error });
-      }
+  const usuarios = await dbKnex("usuarios").select("*");
+  res.status(200).json({ usuarios });
+
+  if(!usuarios){
+    res.status(400).json({ message: "Nenhum usuario cadastrado" });
+    return;
+  }   
 }
 
 //---------------CADASTRAR USERS-------------------------
@@ -43,21 +44,18 @@ export const loginUser = async (req,res) => {
   const {  senha, email  } = req.body;
   
   const usuarioLog = await dbKnex("usuarios").where({ email }).first(); //parte mais importante - armazena o usuario
-  console.log(usuarioLog);
 
   if (!usuarioLog) {
-    res.status(400).json({ message: "Esse usuario não existe" });
+    res.status(401).json({ message: "Esse usuario não existe" });
     return;
   }
 
-  const senhadcpt = await bcrypt.compare(senha, usuarioLog.senha)
-  console.log('validacao',senhadcpt);
+  const senhadcpt = await bcrypt.compare(senha, usuarioLog.senha);
 
-  if(senhadcpt == false){
+  if(!senhadcpt){
     res.status(400).json({ message: "Senha incorreta" });
     return;
   }
- 
 
   const token = jwt.sign({ nome: usuarioLog.nome }, "LOGIN", {
     expiresIn: "24h",

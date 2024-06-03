@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapContainer, TileLayer, FeatureGroup, Polygon, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, FeatureGroup, Polygon, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -9,7 +9,10 @@ import { TokenContext } from "../context/TokenContext";
 import Header from "../components/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { useMap, useMapEvent } from 'react-leaflet/hooks'
+import { useMap, useMapEvent } from 'react-leaflet/hooks';
+import L from 'leaflet';
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { DivOverlay } from "leaflet";
 
 export default function Index() {
   const { token } = useContext(TokenContext);
@@ -18,6 +21,7 @@ export default function Index() {
   const [mapLayers, setMapLayers] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
   const [switcher, setSwitcher] = useState(false);
+  const [formHeight,setFormHeight] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -98,12 +102,23 @@ export default function Index() {
           zoom={13}
           scrollWheelZoom={false}
         >
-          <Marker position={[-31.75896951044599,-52.36375808715821]}
-            title="nao"
-            draggable={true}
-          >
-  
-          </Marker>
+
+          {mapLayers.map((element,index) =>{
+            return(
+              <Marker key={element.id} position={[element.latlngs[index].lat, element.latlngs[index].lng]}
+                title={element.title}
+                draggable={true}
+                riseOnHover={true}
+                alt={element.title}
+              >
+                <Popup
+                  autoPan={true}
+                >
+                  {element.title}
+                </Popup>
+              </Marker>
+            )
+          })}
           <FeatureGroup>
             <EditControl
               position="topright"
@@ -137,10 +152,13 @@ export default function Index() {
                 <FontAwesomeIcon
                   icon={switcher ? faArrowUp : faArrowDown}
                   className="arrowDown"
-                  onClick={() => setSwitcher(!switcher)}
+                  onClick={() => {
+                    setSwitcher(!switcher);
+                    setFormHeight(!formHeight);
+                  }}
                 />
               </header>
-              <form>
+              <form style={{height:formHeight ? "auto" : "0px"}}>
                 <label>
                   <span>Titulo</span>
                   <input

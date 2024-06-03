@@ -9,13 +9,13 @@ router.use(json())
 
 // Rota Usuarios
 
-router.get('/users' ,getUsers)
+router.get('/users' ,verificaLogin,getUsers)
       .post('/sign', createUsers)
       .post('/login', loginUser)
 
 // Rota Hidro
 
-router.post('/teste', createHidro2)
-      .post('/teste2', createHidrocord)
+router.post('/teste',verificaLogin ,createHidro2)
+      .post('/teste2',verificaLogin, createHidrocord)
 
 export default router

@@ -26,18 +26,17 @@ export default function Login() {
     event.preventDefault();
     connection
       .post("/login", {
-        senha: password,
-        email: email,
+        "senha": password,
+        "email": email
       })
       .then((res) => {
-        console.log(res.data);
         //tratamento para caso o usuário não exista
         if (res.data.message === "Esse usuario não existe") {
           setErrorMessage("Esse usuario não existe !");
           return;
         }
 
-        //tratamento para caso a senha esteja incorreta
+        // //tratamento para caso a senha esteja incorreta
         if (res.data.message === "Senha incorreta") {
           setErrorMessage("Senha incorreta !");
           return;
@@ -48,7 +47,7 @@ export default function Login() {
         navigate("/");
       })
       .catch((err) => {
-        console.log(err);
+        setErrorMessage("Dados incorretos !");
         return;
       });
   };
