@@ -11,7 +11,7 @@
 .header{
   background-color: #002244;
   color: white;
-  margin-bottom: 5%;
+  margin-bottom: 2%;
   display: flex;
   align-items: center;
   padding: 2rem;
@@ -126,6 +126,22 @@ h2 {
   transition: all .8s;
 }
 
+.formCordinatesContainer .form{
+  height: auto!important;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  align-items: center;
+  background-color: #C0C0C0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  transition: all .8s;
+}
+
+.formCordinatesContainer .separeted_input_cordinates{
+  width: 80%;
+}
+
 .formCordinatesContainer form label{
   margin-top: 2%;
   display: flex;
@@ -163,6 +179,15 @@ h2 {
   animation-fill-mode:forwards;
   animation-iteration-count: infinite;
   animation-direction: alternate;
+}
+
+.leaflet-draw .leaflet-draw-section a[title="Clear all layers"]{
+  display: none;
+}
+
+.trash{
+  position: absolute;
+  right: 10%;
 }
 
 @media only screen and (max-width:1440px){

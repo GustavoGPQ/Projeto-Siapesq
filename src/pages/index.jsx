@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef, useDebugValue } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -8,11 +8,9 @@ import { EditControl } from "react-leaflet-draw";
 import { TokenContext } from "../context/TokenContext";
 import Header from "../components/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { useMap, useMapEvent } from 'react-leaflet/hooks';
-import L from 'leaflet';
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { DivOverlay } from "leaflet";
+import { faArrowDown, faArrowUp, faTrash } from "@fortawesome/free-solid-svg-icons";
+import L from "leaflet";
+
 
 export default function Index() {
   const { token } = useContext(TokenContext);
@@ -20,8 +18,9 @@ export default function Index() {
   const navigate = useNavigate();
   const [mapLayers, setMapLayers] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
-  const [switcher, setSwitcher] = useState(false);
-  const [formHeight,setFormHeight] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0); 
+  const [switcher,setSwitcher] = useState(false);
+  
 
   useEffect(() => {
     if (!token) {
@@ -29,35 +28,43 @@ export default function Index() {
     }
   }, [navigate, token]);
 
+  useEffect(() =>{
+    console.log(mapLayers)
+  })
+
   const _onCreate = (e) => {
     const { layerType, layer } = e;
     if (layerType === "polygon") {
       const { _leaflet_id } = layer;
+      const center = layer.getCenter(); 
       setMapLayers((layers) => [
         ...layers,
         {
           title: "",
           id: _leaflet_id,
           latlngs: layer.getLatLngs()[0],
+          center : center,
+          switcher: false
         },
       ]);
     }
   };
 
   const _onEdited = (e) => {
-    const {
-      layers: { _layers },
-    } = e;
-    Object.values(_layers).forEach(({ _leaflet_id, editing }) => {
-      setMapLayers((layers) =>
-        layers.map((l) => {
-          if (l.id === _leaflet_id) {
-            return { ...l, latlngs: editing.latlngs[0] };
-          } else {
-            return l;
-          }
-        })
-      );
+    const { layers: { _layers } } = e;
+    Object.values(_layers).forEach(layer => {
+        const { _leaflet_id } = layer;
+        setMapLayers(layers => layers.map(l => {
+            if (l.id === _leaflet_id) {
+                return {
+                    ...l,
+                    latlngs: layer.getLatLngs()[0],
+                    center: layer.getCenter()
+                };
+            } else {
+                return l;
+            }
+        }));
     });
   };
 
@@ -82,10 +89,10 @@ export default function Index() {
 
   const handleSavePolygon = () => {
     if (polygonCoords.length > 2) {
-      // Um polígono precisa de pelo menos 3 pontos
       const newPolygon = {
         id: new Date().getTime(),
-        latlngs: polygonCoords,
+        latlngs: polygonCoords.map(coord => ({ lat: coord.lat, lng: coord.lng })),
+        center: L.polygon(polygonCoords.map(coord => [coord.lat, coord.lng])).getCenter()
       };
       setMapLayers((layers) => [...layers, newPolygon]);
       setPolygonCoords([]);
@@ -97,19 +104,23 @@ export default function Index() {
       <Header />
       <div className="map">
         <MapContainer
-          style={{ width: "50%", height: "30rem" }}
+          key={forceUpdate} // Forçar a re-renderização
+          style={{ width: "80%", height: "45rem", position: 'relative' }}
           center={position}
           zoom={13}
           scrollWheelZoom={false}
         >
-
+          <div className="custom-overlay">
+            <h2>Custom Overlay</h2>
+            <p>This is a custom overlay div</p>
+          </div>
           {mapLayers.map((element,index) =>{
             return(
-              <Marker key={element.id} position={[element.latlngs[index].lat, element.latlngs[index].lng]}
+              <Marker 
+                key={index}
                 title={element.title}
+                position={element.center}
                 draggable={true}
-                riseOnHover={true}
-                alt={element.title}
               >
                 <Popup
                   autoPan={true}
@@ -117,7 +128,7 @@ export default function Index() {
                   {element.title}
                 </Popup>
               </Marker>
-            )
+            );
           })}
           <FeatureGroup>
             <EditControl
@@ -145,70 +156,82 @@ export default function Index() {
       </div>
       {mapLayers.map((elementMapLayers, indexMapLayers) => {
         return (
-          <>
-            <div className="formCordinatesContainer">
-              <header className="headerForm">
-                Formulário da localização: {elementMapLayers.title}
-                <FontAwesomeIcon
-                  icon={switcher ? faArrowUp : faArrowDown}
-                  className="arrowDown"
-                  onClick={() => {
-                    setSwitcher(!switcher);
-                    setFormHeight(!formHeight);
+          <div key={indexMapLayers} className="formCordinatesContainer">
+            <header className="headerForm">
+              Formulário da localização: {elementMapLayers.title}
+              <FontAwesomeIcon
+                icon={elementMapLayers.switcher ? faArrowUp : faArrowDown}
+                className="arrowDown"
+                onClick={() => setMapLayers((previous) =>{
+                  previous[indexMapLayers].switcher = !previous[indexMapLayers].switcher;
+                  setForceUpdate(forceUpdate + 1);
+                  return[...previous];
+                })}
+              />
+              <FontAwesomeIcon
+                icon={faTrash}
+                className="trash"
+                onClick={() => {
+                  setMapLayers((previous) => {
+                    previous.splice(indexMapLayers, 1);
+                    setForceUpdate(forceUpdate + 1);
+                    return [...previous];
+                  });
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            </header>
+            <form style={{transition:"all .8s",height: elementMapLayers.switcher? "auto" : "0px"}}>
+              <label>
+                <span>Titulo</span>
+                <input
+                  type="text"
+                  value={elementMapLayers.title}
+                  onChange={(e) => {
+                    setMapLayers((previous) => {
+                      previous[indexMapLayers].title = e.target.value;
+                      setForceUpdate(forceUpdate + 1);
+                      return [...previous];
+                    });
                   }}
                 />
-              </header>
-              <form style={{height:formHeight ? "auto" : "0px"}}>
-                <label>
-                  <span>Titulo</span>
-                  <input
-                    type="text"
-                    value={elementMapLayers.title}
-                    onChange={(e) => {
-                      setMapLayers((previous) => {
-                        previous[indexMapLayers].title = e.target.value;
-                        return [...previous];
-                      });
-                    }}
-                  />
-                </label>
-                {elementMapLayers.latlngs.map((elementLngs, indexLngs) => {
-                  return (
-                    <>
-                      <label>
-                        <span>Latitude</span>
-                        <input
-                          type="number"
-                          value={elementLngs.lat}
-                          onChange={(e) => {
-                            setMapLayers((previous) => {
-                              previous[indexMapLayers].latlngs[indexLngs].lat =
-                                e.target.value;
-                              return [...previous];
-                            });
-                          }}
-                        />
-                      </label>
-                      <label>
-                        <span>longitude</span>
-                        <input
-                          type="number"
-                          value={elementLngs.lng}
-                          onChange={(e) => {
-                            setMapLayers((previous) => {
-                              previous[indexMapLayers].latlngs[indexLngs].lng =
-                                e.target.value;
-                              return [...previous];
-                            });
-                          }}
-                        />
-                      </label>
-                    </>
-                  );
-                })}
-              </form>
-            </div>
-          </>
+              </label>
+              {elementMapLayers.latlngs.map((elementLngs, indexLngs) => {
+                return (
+                  <div className="separeted_input_cordinates" key={indexLngs}>
+                    <label>
+                      <span>Latitude</span>
+                      <input
+                        type="number"
+                        value={elementLngs.lat}
+                        onChange={(e) => {
+                          setMapLayers((previous) => {
+                            previous[indexMapLayers].latlngs[indexLngs].lat = parseFloat(e.target.value);
+                            setForceUpdate(forceUpdate + 1); // Forçar a re-renderização
+                            return [...previous];
+                          });
+                        }}
+                      />
+                    </label>
+                    <label>
+                      <span>Longitude</span>
+                      <input
+                        type="number"
+                        value={elementLngs.lng}
+                        onChange={(e) => {
+                          setMapLayers((previous) => {
+                            previous[indexMapLayers].latlngs[indexLngs].lng = parseFloat(e.target.value);
+                            setForceUpdate(forceUpdate + 1); // Forçar a re-renderização
+                            return [...previous];
+                          });
+                        }}
+                      />
+                    </label>
+                  </div>
+                );
+              })}
+            </form>
+          </div>
         );
       })}
     </>
