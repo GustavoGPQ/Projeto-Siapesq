@@ -3,8 +3,7 @@ import dbKnex from '../database/db_config.mjs'
 
 
 export const createHidro = async (req,res) => {
-    const { nome, poligono } = req.body 
-    
+  const { nome, poligono } = req.body 
 
   
 if(!nome){
