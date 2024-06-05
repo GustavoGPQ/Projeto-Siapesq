@@ -257,6 +257,60 @@ select option{
   cursor: pointer;
 }
 
+.addPolygon{
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  position: absolute;
+  right: 16%;
+  top: 1.6%;
+  padding: 0.5rem;
+}
+
+.addPolygon button{
+  border: none;
+  border-radius: 2px;
+  padding: .4rem;
+  cursor: pointer;
+}
+
+.containerModal{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2001;
+}
+
+.Modal-Cordinates{
+  z-index: 2001;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: blur(0px)!important;
+}
+
+.modal-content{
+  border-radius: 6px;
+  border: 1px solid black;
+  width: 40%;
+  height: 70%;
+  background-color: #DCDCDC;
+}
+
+.headerModal{
+  border-bottom: 3px solid black;
+  padding-left: .8rem;
+  padding-top: .8rem;
+}
+
+.headerModal h2{
+  color: #002244;
+}
+
 @media only screen and (max-width:1440px){
   .registro-container{
     width: 36%;

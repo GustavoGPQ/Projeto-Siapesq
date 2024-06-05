@@ -10,7 +10,9 @@ import Header from "../components/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import L from "leaflet";
+import Modal from "react-modal";
 
+Modal.setAppElement("#root");
 
 export default function Index() {
   const { token } = useContext(TokenContext);
@@ -23,6 +25,17 @@ export default function Index() {
   const [selectPolygon,setSelectPolygon] = useState(null);
   const [selectSide, setSelectSide] = useState(null);
   const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null); // Adicionando estado para rastrear o índice do polígono selecionado
+  const [modalIsOpen,setModalIsOpen] = useState(false);
+
+  const openModal = () =>{
+    setModalIsOpen(true);
+    document.querySelector("#root").style.filter = "blur(5px)";
+  }
+
+  const closeModal = () =>{
+    setModalIsOpen(false);
+    document.querySelector("#root").style.filter = "blur(0px)";
+  }
 
   useEffect(() => {
     if (!token) {
@@ -31,9 +44,13 @@ export default function Index() {
   }, [navigate, token]);
 
   useEffect(() =>{
+    console.log(mapLayers);
+  },[mapLayers]);
+
+  useEffect(() =>{
     if(mapLayers.length === 0) {
       setSelectSide(null);
-      setSelectPolygon(null);
+      setSelectPolygon(null)
     }
   },[mapLayers]);
 
@@ -81,6 +98,12 @@ export default function Index() {
     });
   };
 
+  const handleCenter = () =>{
+    const bounds = L.latLngBounds(mapLayers[selectPolygon].latlngs.map(coord => L.latLng(coord.lat, coord.lng)));
+    const center = bounds.getCenter();
+    return center;
+  }
+
   const handleAddCoordinate = (e) => {
     e.preventDefault();
     const lat = parseFloat(e.target.latitude.value);
@@ -103,6 +126,14 @@ export default function Index() {
     }
   };
 
+  const handleSubmitCordinates = (e) =>{
+    e.preventDefault();
+    mapLayers.splice(selectPolygon,1);
+    setForceUpdate(forceUpdate + 1);
+    setSelectPolygon(null);
+    setSelectSide(null);
+  }
+
   // Função para alterar a cor do polígono selecionado
   const changePolygonColor = (index) => {
     setMapLayers((prevLayers) => {
@@ -122,6 +153,24 @@ export default function Index() {
     <>
       <Header />
       <div className="map">
+      {/*Card para adição de polígonos*/}
+      <div className="addPolygon">
+        <button onClick={openModal}>Adicionar Polígono <span style={{color:"green", fontWeight:"bolder", fontSize:"larger"}}>+</span></button>
+      </div>
+      <div className="containerModal">
+        <Modal 
+            isOpen={modalIsOpen}
+            onAfterClose={modalIsOpen}
+            contentLabel="Adicionar novo polígono"
+            overlayClassName="Modal-Cordinates"
+            className="modal-content"
+          >
+          <header className="headerModal">
+            <h2>Adicionar novo polígono</h2>
+          </header>
+          <button onClick={closeModal}>Fechar</button>
+        </Modal>
+      </div>
       {/** card para edição dos polígonos*/}
       {mapLayers.length > 0 && 
         <div style={{right: visible ? "2.4%" : "-14.2%"}} className="container-overlay-1">
@@ -134,7 +183,8 @@ export default function Index() {
               const selectedIndex = parseInt(e.target.value);
               setSelectPolygon(selectedIndex);
               setSelectedPolygonIndex(selectedIndex);
-              changePolygonColor(selectedIndex); // Chamada para alterar a cor do polígono selecionado
+              // Chamada para alterar a cor do polígono selecionado
+              changePolygonColor(selectedIndex);
             }}>
               <option selected disabled>Qual polígono Editar</option>
               {mapLayers.map((element,index) =>{
@@ -156,7 +206,7 @@ export default function Index() {
               </select>
             }
             {selectSide !== null && 
-              <form>
+              <form onSubmit={handleSubmitCordinates}>
                 <label>
                   <span>
                     Latitude
@@ -166,6 +216,7 @@ export default function Index() {
                     value={mapLayers[selectPolygon].latlngs[selectSide].lat}
                     onChange={e => setMapLayers((previous) =>{
                       mapLayers[selectPolygon].latlngs[selectSide].lat = parseFloat(e.target.value);
+                      previous[selectPolygon].center = handleCenter();
                       setForceUpdate(forceUpdate + 1);
                       return [...previous];
                     })} 
@@ -178,11 +229,13 @@ export default function Index() {
                     value={mapLayers[selectPolygon].latlngs[selectSide].lng}
                     onChange={e => setMapLayers((previous) => {
                       mapLayers[selectPolygon].latlngs[selectSide].lng = parseFloat(e.target.value);
+                      previous[selectPolygon].center = handleCenter;
                       setForceUpdate(forceUpdate + 1);
                       return [...previous];
                     })} 
                   />
                 </label>
+                <button type="submit">Remover Polígono</button>
               </form>
             }
           </section>
