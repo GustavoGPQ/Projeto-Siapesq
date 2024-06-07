@@ -8,7 +8,8 @@ export const verificaLogin = (req,res,next) => {
     if (token == null) return res.sendStatus(401)
   
       const usuario = jwt.verify(token, 'LOGIN')
-      req.usuario = usuario
+      req.usuario = usuario.id
+      console.log('oi', req.usuario);
   
       next()
         

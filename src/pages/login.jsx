@@ -17,7 +17,7 @@ export default function Login() {
   const { token, setToken } = useContext(TokenContext);
 
   useEffect(() => {
-    if (localStorage.getItem("userToken")) {
+    if (localStorage.getItem("  ")) {
       navigate("/");
     }
   }, [navigate]);
