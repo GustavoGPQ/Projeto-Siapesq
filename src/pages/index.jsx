@@ -23,7 +23,7 @@ Modal.setAppElement("#root");
 
 export default function Index() {
   const { token } = useContext(TokenContext);
-  const [position,setPosition] = useState([-31.7642, -52.3376]);
+  const [position, setPosition] = useState([-31.7642, -52.3376]);
   const navigate = useNavigate();
   const [mapLayers, setMapLayers] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
@@ -34,9 +34,6 @@ export default function Index() {
   const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null); // Adicionando estado para rastrear o índice do polígono selecionado
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
-  const [latitude,setLatitude] = useState("");
-  const [longitude,setLongitude] = useState("");
-  const [mapLayersLength,setMapLayersLength] = useState(0);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -60,7 +57,9 @@ export default function Index() {
       setSelectPolygon(null);
     }
 
-    setMapLayersLength(mapLayers.length);
+    if(mapLayers.length > 0){
+      console.log(mapLayers[0]);
+    }
   }, [mapLayers]);
 
   const _onCreate = (e) => {
@@ -72,8 +71,8 @@ export default function Index() {
         ...layers,
         {
           title: "",
-          id: _leaflet_id,
           id_type: "manual",
+          id: _leaflet_id,
           latlngs: layer.getLatLngs()[0],
           center: center,
         },
@@ -85,15 +84,15 @@ export default function Index() {
     const {
       layers: { _layers },
     } = e;
-
     Object.values(_layers).forEach((layer) => {
+      
       setMapLayers((layers) =>
         layers.map((l) => {
-          return {
-            ...l,
-            latlngs: layer.getLatLngs()[0],
-            center: layer.getCenter(),
-          };
+            return {
+              ...l,
+              latlngs: layer.getLatLngs()[0],
+              center: layer.getCenter(),
+            };
         })
       );
     });
@@ -136,8 +135,8 @@ export default function Index() {
     if (polygonCoords.length >= 3) {
       const newPolygon = {
         title: "",
-        id: new Date().getTime(),
         id_type: "form",
+        id: new Date().getTime(),
         latlngs: polygonCoords,
         center: L.latLngBounds(
           polygonCoords.map((coord) => L.latLng(coord.lat, coord.lng))
@@ -159,13 +158,13 @@ export default function Index() {
     setSelectSide(null);
   };
 
-  const handleSaveEdit = (e) => {
+  const handleSaveEdit = (e) =>{
     e.preventDefault();
     setForceUpdate(forceUpdate + 1);
     setForceEditDivUpdate(forceEditDivUpdate + 1);
     setSelectPolygon(null);
     setSelectSide(null);
-  };
+  }
 
   // Função para alterar a cor do polígono selecionado
   const changePolygonColor = (index) => {
@@ -186,6 +185,28 @@ export default function Index() {
     <>
       <Header />
       <div className="map">
+
+        {/** Section para redirecionamento de posição */}
+        {mapLayers.length > 0 && 
+            <section className="go-to">
+                <select onChange={(e) =>{
+                    setPosition((previous) => {
+                        previous[0] = mapLayers[e.target.value].center.lat;
+                        previous[1] = mapLayers[e.target.value].center.lng;
+                        setForceUpdate(forceUpdate + 1);
+                        return [...previous];
+                    })
+                }}>
+                    <option disabled selected>Selecionar Ponto</option>
+                    {mapLayers.map((element,index) =>{
+                        return(
+                            <option value={index}>{index + 1}° {element.title}</option>
+                        )
+                    })}
+                </select>
+            </section>        
+        }
+
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
           <button onClick={openModal}>
@@ -216,21 +237,15 @@ export default function Index() {
               <form onSubmit={handleSubmitAddCordinatesModal}>
                 <label>
                   Latitude:
-                  <input type="number" step="any" value={latitude} onChange={e => setLatitude(e.target.value)} name="latitude" required />
+                  <input type="number" step="any" name="latitude" required />
                 </label>
                 <br />
                 <label>
                   Longitude:
-                  <input type="number" step="any" name="longitude" value={longitude} onChange={e => setLongitude(e.target.value)} required />
+                  <input type="number" step="any" name="longitude" required />
                 </label>
                 <br />
-                <button       
-                  type="submit"
-                  disabled={(latitude === "" || longitude === "")}
-                  className="addCordinateButton"
-                >
-                Adicionar Coordenada
-                </button>
+                <button type="submit">Adicionar Coordenada</button>
               </form>
               <button
                 onClick={handleSavePolygon}
@@ -243,7 +258,7 @@ export default function Index() {
                 Fechar
               </button>
               {polygonCoords.length > 0 && (
-                <div className="cordinatesAdded" style={{marginTop:"3rem",width:"46%",height:"53%",overflow:"auto"}}>
+                <div>
                   <h3>Coordenadas Adicionadas:</h3>
                   <ul>
                     {polygonCoords.map((coord, index) => (
@@ -257,7 +272,7 @@ export default function Index() {
             </section>
           </Modal>
         </div>
-       { /* card para edição dos polígonos*/}
+        {/** card para edição dos polígonos*/}
         {mapLayers.length > 0 && (
           <div
             style={{ right: visible ? "2.4%" : "-14.2%" }}
@@ -309,7 +324,7 @@ export default function Index() {
               {selectSide !== null && (
                 <form className="form-lt-lg">
                   <label>
-                    <span><h3>Latitude</h3></span>
+                    <span>Latitude</span>
                     <input
                       type="number"
                       value={mapLayers[selectPolygon].latlngs[selectSide].lat}
@@ -325,7 +340,7 @@ export default function Index() {
                     />
                   </label>
                   <label>
-                    <span><h3>Longitude</h3></span>
+                    <span>Longitude</span>
                     <input
                       type="number"
                       value={mapLayers[selectPolygon].latlngs[selectSide].lng}
@@ -340,9 +355,7 @@ export default function Index() {
                       }
                     />
                   </label>
-                  <button className="button-save-delet" onClick={handleRemovePolygon}>
-                    Remover Polígono
-                  </button>
+                  <button className="button-save-delet" onClick={handleRemovePolygon}>Remover Polígono</button>
                   <button className="button-save-delet save" onClick={handleSaveEdit}>Salvar Edição</button>
                 </form>
               )}
@@ -382,12 +395,12 @@ export default function Index() {
                 marker: false,
               }}
             />
-            {mapLayers.map((element, index) => {
-              if (element.id_type === "form") {
-                return <Polygon key={element.id} positions={element.latlngs} />;
-              }
-              return 0;
-            })}
+            {mapLayers.map((element, index) => (
+              <Polygon
+                key={element.id}
+                positions={element.latlngs}
+              />
+            ))}
           </FeatureGroup>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
