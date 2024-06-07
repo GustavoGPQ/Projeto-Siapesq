@@ -257,7 +257,7 @@ export default function Index() {
             </section>
           </Modal>
         </div>
-        {/** card para edição dos polígonos*/}
+       { /* card para edição dos polígonos*/}
         {mapLayers.length > 0 && (
           <div
             style={{ right: visible ? "2.4%" : "-14.2%" }}
@@ -307,9 +307,9 @@ export default function Index() {
                 </select>
               )}
               {selectSide !== null && (
-                <form>
+                <form className="form-lt-lg">
                   <label>
-                    <span>Latitude</span>
+                    <span><h3>Latitude</h3></span>
                     <input
                       type="number"
                       value={mapLayers[selectPolygon].latlngs[selectSide].lat}
@@ -325,7 +325,7 @@ export default function Index() {
                     />
                   </label>
                   <label>
-                    <span>Longitude</span>
+                    <span><h3>Longitude</h3></span>
                     <input
                       type="number"
                       value={mapLayers[selectPolygon].latlngs[selectSide].lng}
@@ -340,10 +340,10 @@ export default function Index() {
                       }
                     />
                   </label>
-                  <button onClick={handleRemovePolygon}>
+                  <button className="button-save-delet" onClick={handleRemovePolygon}>
                     Remover Polígono
                   </button>
-                  <button onClick={handleSaveEdit}>Salvar Edição</button>
+                  <button className="button-save-delet save" onClick={handleSaveEdit}>Salvar Edição</button>
                 </form>
               )}
             </section>
