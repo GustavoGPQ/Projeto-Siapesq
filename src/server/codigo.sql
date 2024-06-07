@@ -15,13 +15,15 @@ telefone VARCHAR(100) NOT NULL
 
 CREATE TABLE hidro(
 id INT PRIMARY KEY AUTO_INCREMENT,
-nome VARCHAR(100) NOT NULL
+iduser INT NOT NULL,
+nome VARCHAR(100) NOT NULL,
+FOREIGN KEY (iduser) REFERENCES usuarios(id)
 );
 
 
 CREATE TABLE hidrocord(
 id INT PRIMARY KEY AUTO_INCREMENT,
-hidroid INT,
+hidroid INT NOT NULL,
 latitude FLOAT,
 longitude FLOAT,
 FOREIGN KEY (hidroid) REFERENCES hidro(id)

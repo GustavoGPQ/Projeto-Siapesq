@@ -1,7 +1,7 @@
 import { Router, json } from "express";
 import { createUsers, getUsers, loginUser } from "./controllers/userController.mjs";
 import { verificaLogin } from "./middleware/autheticator.mjs";
-import { createHidro2, createHidrocord } from "./controllers/hidroController.mjs";
+import { createHidro2, createHidrocord, deleteHidro, hidroIndexByUserLog } from "./controllers/hidroController.mjs";
 
 const router = Router()
 
@@ -17,5 +17,7 @@ router.get('/users' ,verificaLogin,getUsers)
 
 router.post('/teste',verificaLogin ,createHidro2)
       .post('/teste2',verificaLogin, createHidrocord)
+      .get('/hidroUser',verificaLogin,hidroIndexByUserLog )
+      .delete('/del',verificaLogin ,deleteHidro)
 
 export default router
