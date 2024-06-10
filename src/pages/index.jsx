@@ -36,7 +36,7 @@ export default function Index() {
   const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
-  const [modalErrorIsOpen,setModalErrorIsOpen] = useState(false);
+  const [modalErrorIsOpen, setModalErrorIsOpen] = useState(false);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -49,7 +49,7 @@ export default function Index() {
   };
 
   const openModalError = () => {
-    setModalErrorIsOpen(true)
+    setModalErrorIsOpen(true);
     document.querySelector("#root").style.filter = "blur(5px)";
   };
 
@@ -58,21 +58,21 @@ export default function Index() {
     document.querySelector("#root").style.filter = "blur(0px)";
   };
 
-  const removeDuplicates = (layers) =>{
+  const removeDuplicates = (layers) => {
     const ids = new Set();
     const uniqueLayers = [];
 
     for (const layer of layers) {
-        if (!ids.has(layer.id)) {
-            ids.add(layer.id);
-            uniqueLayers.push(layer);
-        }
+      if (!ids.has(layer.id)) {
+        ids.add(layer.id);
+        uniqueLayers.push(layer);
+      }
     }
     return uniqueLayers;
-  }
+  };
 
   useEffect(() => {
-    if(!localStorage.getItem("userToken")){
+    if (!localStorage.getItem("userToken")) {
       navigate("/login");
     }
   }, [navigate]);
@@ -85,46 +85,46 @@ export default function Index() {
   }, [mapLayers]);
 
   //responsável por trazer todas as hidros quando a página for reatuazliada
-  useEffect(() =>{
-    connection.get("/gethidro",{
-      headers:{
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`
-      }
-    })
-    .then((res) =>{
-      const hidros = res.data.hidro;
-      const hidroCordinates = res.data.hidroCord
+  useEffect(() => {
+    connection
+      .get("/gethidro", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      })
+      .then((res) => {
+        const hidros = res.data.hidro;
+        const hidroCordinates = res.data.hidroCord;
 
-      for (let i = 0; i < hidros.length; i++) {
-        for (let j = 0; j < hidroCordinates.length; j++) {
-          if (hidros[i].id === hidroCordinates[j].hidroid){
-            const latitude = JSON.parse(hidroCordinates[j].latitude);
-            const longitude = JSON.parse(hidroCordinates[j].longitude);
-            let latlngs = [];
-      
-            for (let k = 0; k < latitude.length; k++) { 
-              latlngs.push({ lat: latitude[k], lng: longitude[k] });
+        for (let i = 0; i < hidros.length; i++) {
+          for (let j = 0; j < hidroCordinates.length; j++) {
+            if (hidros[i].id === hidroCordinates[j].hidroid) {
+              const latitude = JSON.parse(hidroCordinates[j].latitude);
+              const longitude = JSON.parse(hidroCordinates[j].longitude);
+              let latlngs = [];
+
+              for (let k = 0; k < latitude.length; k++) {
+                latlngs.push({ lat: latitude[k], lng: longitude[k] });
+              }
+
+              const bounds = L.latLngBounds(latlngs);
+
+              const newPolygon = {
+                title: hidros[i].nome,
+                id_type: "form",
+                id: hidros[i].id,
+                editing: false,
+                latlngs: latlngs,
+                center: bounds.getCenter(),
+              };
+              setMapLayers((layers) => [...layers, newPolygon]);
+              console.log(mapLayers);
             }
-      
-            const bounds = L.latLngBounds(latlngs); 
-      
-            const newPolygon = {
-              title: hidros[i].nome,
-              id_type: "form",
-              id: hidros[i].id,
-              editing: false,
-              latlngs: latlngs,
-              center: bounds.getCenter()
-            }
-            setMapLayers((layers) => [...layers, newPolygon]);
-            console.log(mapLayers)
           }
         }
-      }
-      setMapLayers((layers) => removeDuplicates(layers));
-    })
-
-  },[]);
+        setMapLayers((layers) => removeDuplicates(layers));
+      });
+  }, []);
 
   const _onCreate = (e) => {
     const { layerType, layer } = e;
@@ -150,15 +150,14 @@ export default function Index() {
       layers: { _layers },
     } = e;
     Object.values(_layers).forEach((layer) => {
-      
       setMapLayers((layers) =>
         layers.map((l) => {
-            return {
-              ...l,
-              editing:true,
-              latlngs: layer.getLatLngs()[0],
-              center: layer.getCenter(),
-            };
+          return {
+            ...l,
+            editing: true,
+            latlngs: layer.getLatLngs()[0],
+            center: layer.getCenter(),
+          };
         })
       );
     });
@@ -203,7 +202,7 @@ export default function Index() {
         title: "",
         id_type: "form",
         id: new Date().getTime(),
-        editing:true,
+        editing: true,
         latlngs: polygonCoords,
         center: L.latLngBounds(
           polygonCoords.map((coord) => L.latLng(coord.lat, coord.lng))
@@ -216,120 +215,144 @@ export default function Index() {
     }
   };
 
-  const handleExit = () =>{
+  const handleExit = () => {
     localStorage.clear();
     navigate("/login");
-  }
+  };
 
   const handleRemovePolygon = (e) => {
     e.preventDefault();
-    
-    connection.post("/del",{
-      hidroId: mapLayers[selectPolygon].id
-    },{
-      headers:{
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+
+    connection.post(
+      "/del",
+      {
+        hidroId: mapLayers[selectPolygon].id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
       }
+    )
+    .then((res) =>{
+      mapLayers.splice(selectPolygon, 1);
     })
-    
-    mapLayers.splice(selectPolygon, 1);
+    .catch((err) =>{
+      openModalError();
+      setForceUpdate(forceUpdate + 1);
+    })
     setForceUpdate(forceUpdate + 1);
     setForceEditDivUpdate(forceEditDivUpdate + 1);
     setSelectPolygon(null);
     setSelectSide(null);
   };
 
-  const handleSaveEdit = (e) =>{
+  const handleSaveEdit = (e) => {
     e.preventDefault();
     setForceUpdate(forceUpdate + 1);
     setForceEditDivUpdate(forceEditDivUpdate + 1);
     setSelectPolygon(null);
     setSelectSide(null);
-  }
+  };
 
-  const handleSavePolygonDB = () =>{
-    if(mapLayers.length === 0){
+  const handleSavePolygonDB = () => {
+    if (mapLayers.length === 0) {
       openModalError();
       return;
     }
 
-    if(mapLayers.some(element => element.title === "")){
+    if (mapLayers.some((element) => element.title === "")) {
       openModalError();
-      return
+      return;
     }
 
-    mapLayers.forEach((element,index) =>{
-      if(element.editing){
-        connection.post("/crateHidro",{
-          "nome": element.title,
-          "iduser": localStorage.getItem("userId"),
-          "id": element.id
-        },
-        {
-          headers:{
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`
+    mapLayers.forEach((element, index) => {
+      if (element.editing) {
+        connection.post(
+          "/crateHidro",
+          {
+            nome: element.title,
+            iduser: localStorage.getItem("userId"),
+            id: element.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
           }
-        })
+        );
 
         let cordenadasX = [];
         let cordenadasY = [];
 
-        for(let i = 0; i < element.latlngs.length; i++){
+        for (let i = 0; i < element.latlngs.length; i++) {
           cordenadasX.push(element.latlngs[i].lat);
           cordenadasY.push(element.latlngs[i].lng);
         }
 
-        connection.post("/createHidroCord",{
-          hidroid: element.id,
-          poligono:{
-           x: JSON.stringify(cordenadasX),
-           y: JSON.stringify(cordenadasY)
+        connection.post(
+          "/createHidroCord",
+          {
+            hidroid: element.id,
+            poligono: {
+              x: JSON.stringify(cordenadasX),
+              y: JSON.stringify(cordenadasY),
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
           }
-        },
-      {
-        headers:{
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`
-        }
-      })
+        );
       }
       element.editing = false;
-    })
-  }
+    });
+  };
 
   return (
     <>
       <Header />
       <div className="map">
-
         {/** Section para redirecionamento de posição */}
-        {mapLayers.length > 0 && 
-            <section className="go-to">
-                <select onChange={(e) =>{
-                    setPosition((previous) => {
-                        previous[0] = mapLayers[e.target.value].center.lat;
-                        previous[1] = mapLayers[e.target.value].center.lng;
-                        setForceUpdate(forceUpdate + 1);
-                        return [...previous];
-                    })
-                }}>
-                    <option disabled selected>Selecionar Ponto</option>
-                    {mapLayers.map((element,index) =>{
-                        return(
-                            <option value={index}>{index + 1}° {element.title}</option>
-                        )
-                    })}
-                </select>
-            </section>        
-        }
+        {mapLayers.length > 0 && (
+          <section className="go-to">
+            <select
+              onChange={(e) => {
+                setPosition((previous) => {
+                  previous[0] = mapLayers[e.target.value].center.lat;
+                  previous[1] = mapLayers[e.target.value].center.lng;
+                  setForceUpdate(forceUpdate + 1);
+                  return [...previous];
+                });
+              }}
+            >
+              <option disabled selected>
+                Selecionar Ponto
+              </option>
+              {mapLayers.map((element, index) => {
+                return (
+                  <option value={index}>
+                    {index + 1}° {element.title}
+                  </option>
+                );
+              })}
+            </select>
+          </section>
+        )}
 
-         {/*botão para saída do usuário*/}
-         <div className="exit">
-            <button className="exitButton" onClick={handleExit}>Sair</button>
-          </div>
+        {/*botão para saída do usuário*/}
+        <div className="exit">
+          <button className="exitButton" onClick={handleExit}>
+            Sair
+          </button>
+        </div>
         {/*Card para adição de polígonos*/}
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
-          <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco</button>
+          <button onClick={handleSavePolygonDB}>
+            Adicionar Polígono ao Banco
+          </button>
           <button onClick={openModal}>
             Adicionar Polígono{" "}
             <span
@@ -351,9 +374,7 @@ export default function Index() {
             overlayClassName="Modal-Error"
             className="Modal-Error-Content"
           >
-             <ModalErrorContent
-              closer={closeModalError}
-             />
+            <ModalErrorContent closer={closeModalError} />
           </Modal>
           <Modal
             isOpen={modalIsOpen}
@@ -424,7 +445,6 @@ export default function Index() {
                   const selectedIndex = parseInt(e.target.value);
                   setSelectPolygon(selectedIndex);
                   setSelectedPolygonIndex(selectedIndex);
-                  
                 }}
               >
                 <option disabled selected>
@@ -454,15 +474,17 @@ export default function Index() {
               )}
               {selectSide !== null && (
                 <form className="form-lt-lg">
-                   <label>
+                  <label>
                     <span>Título da hidro</span>
-                    <input 
+                    <input
                       type="text"
                       value={mapLayers[selectPolygon].title}
-                      onChange={(e) => setMapLayers((previous) =>{
-                        previous[selectPolygon].title = e.target.value;
-                        return [...previous];
-                      })} 
+                      onChange={(e) =>
+                        setMapLayers((previous) => {
+                          previous[selectPolygon].title = e.target.value;
+                          return [...previous];
+                        })
+                      }
                     />
                   </label>
                   <label>
@@ -499,8 +521,18 @@ export default function Index() {
                       }
                     />
                   </label>
-                  <button className="button-save-delet" onClick={handleRemovePolygon}>Remover Polígono</button>
-                  <button className="button-save-delet save" onClick={handleSaveEdit}>Salvar Edição</button>
+                  <button
+                    className="button-save-delet"
+                    onClick={handleRemovePolygon}
+                  >
+                    Remover Polígono
+                  </button>
+                  <button
+                    className="button-save-delet save"
+                    onClick={handleSaveEdit}
+                  >
+                    Salvar Edição
+                  </button>
                 </form>
               )}
             </section>
@@ -540,10 +572,7 @@ export default function Index() {
               }}
             />
             {mapLayers.map((element, index) => (
-              <Polygon
-                key={element.id}
-                positions={element.latlngs}
-              />
+              <Polygon key={element.id} positions={element.latlngs} />
             ))}
           </FeatureGroup>
           <TileLayer

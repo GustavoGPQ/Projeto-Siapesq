@@ -13,7 +13,6 @@ export const createHidro2 = async (req, res) => {
   }
 
   try {
-    const hidroExistente = await dbKnex('hidro').select()
     const hidroCadastrado = await dbKnex('hidro').insert({nome,iduser,id});
     res.status(200).json({ hidroCadastrado });
   } catch (error){
@@ -37,6 +36,9 @@ export const createHidrocord = async (req, res) => {
 
     let latitude = poligono.x;
     let longitude = poligono.y;
+
+    console.log("latitude",latitude);
+    console.log("longitude",longitude);
 
     await dbKnex('hidrocord').insert({hidroid,latitude,longitude});
 

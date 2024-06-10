@@ -65,6 +65,7 @@ h2 {
   text-align: start;
   width: 70%;
   margin: 10% auto 0 auto;
+  justify-content: space-between;
 }
 
 .registro-container form label input{
@@ -76,6 +77,7 @@ h2 {
   margin-top: 3%;
   padding: .2rem;
   font-size: larger;
+  width: 97%;
 }
 
 .password-input{
