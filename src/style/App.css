@@ -487,6 +487,15 @@ padding-top: 6px;
   }
 }
 
+@media only screen and (max-width:1920px){
+  .addPolygon{
+    width: 27%;
+  }
+  .Modal-Error-Content{
+    height: 27%;
+  }
+}
+
 @keyframes moveArrow{
   0%{
     transform: translateY(0);

@@ -13,6 +13,7 @@ export const createHidro2 = async (req, res) => {
   }
 
   try {
+    const hidroExistente = await dbKnex('hidro').select()
     const hidroCadastrado = await dbKnex('hidro').insert({nome,iduser,id});
     res.status(200).json({ hidroCadastrado });
   } catch (error){

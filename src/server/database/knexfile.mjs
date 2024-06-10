@@ -1,10 +1,10 @@
 export const development ={
     client: 'mysql2',
     connection: {
-      host: 'localhost',
+      host: '127.0.0.1',
       user: 'root',
-      port: '3307',
-      password: '',
+      port: '3306',
+      password: 'senacrs',
       database: 'projeto',
     },
   };
