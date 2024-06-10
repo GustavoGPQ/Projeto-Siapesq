@@ -6,25 +6,25 @@ USE projeto;
 
 
 CREATE TABLE usuarios(
-id INT PRIMARY KEY AUTO_INCREMENT,
-nome VARCHAR(100) NOT NULL,
-email VARCHAR(100) NOT NULL,
-senha VARCHAR(100) NOT NULL,
-telefone VARCHAR(100) NOT NULL
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    senha VARCHAR(100) NOT NULL,
+    telefone VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE hidro(
-id INT PRIMARY KEY AUTO_INCREMENT,
-iduser INT NOT NULL,
-nome VARCHAR(100) NOT NULL,
-FOREIGN KEY (iduser) REFERENCES usuarios(id)
+    id INT PRIMARY KEY,
+    iduser INT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    FOREIGN KEY (iduser) REFERENCES usuarios(id)
 );
 
 
 CREATE TABLE hidrocord(
-id INT PRIMARY KEY AUTO_INCREMENT,
-hidroid INT NOT NULL,
-latitude FLOAT,
-longitude FLOAT,
-FOREIGN KEY (hidroid) REFERENCES hidro(id)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    hidroid INT NOT NULL,
+    latitude FLOAT,
+    longitude FLOAT,
+    FOREIGN KEY (hidroid) REFERENCES hidro(id)
 );

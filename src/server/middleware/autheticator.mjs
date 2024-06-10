@@ -10,7 +10,6 @@ export const verificaLogin = (req,res,next) => {
       const usuario = jwt.verify(token, 'LOGIN')
       req.usuario = usuario.id
       console.log('oi', req.usuario);
-  
       next()
         
     } catch (error) {

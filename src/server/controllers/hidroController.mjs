@@ -1,60 +1,24 @@
 
 import dbKnex from '../database/db_config.mjs'
 
-
-export const createHidro = async (req,res) => {
-  const { nome, poligono } = req.body 
-
-  
-if(!nome){
-  res.status(400).json({message:"Digite o nome da Hidro"})
-}
-if(!coordenadasx){
-  res.status(400).json({message:"Digite a lagitude"})
-}
-if(!coordenadasy){
-  res.status(400).json({message:"Digite a "})
-}
-  
-  try {
-      const hidroCadastrado = await dbKnex('hidro').insert({ nome })
-      //--------como-pegar-o-id-de-hidrocadastrado----------//
-
-      let contador = 0
-      while (contador<poligono.length){
-        let latitude = poligono[contador][0]
-        let longitude = poligono[contador][1]
-        const cordHidro = await dbKnex ('hidrocord').insert({ hidroid, longitude, latitude }).returning('hidroid')
-        contador = contador + 1
-        
-      }
-      
-      
-      res.status(200).json({hidroCadastrado}) 
-  } catch (error) {
-      res.status(500).json({message:"Erro ao cadastrar", error})
-  }
-}
-
-
-
-
 export const createHidro2 = async (req, res) => {
-  const { nome } = req.body;
+  const { nome, iduser, id} = req.body;
 
   if (!nome) {
     return res.status(400).json({ message: "Digite o nome da Hidro" });
   }
 
+  if(!id){
+    return res.status(400).json({ message: "Digite o id da Hidro" });
+  }
+
   try {
-    const hidroCadastrado = await dbKnex('hidro').insert({ nome }).returning('*');
+    const hidroCadastrado = await dbKnex('hidro').insert({nome,iduser,id});
     res.status(200).json({ hidroCadastrado });
-  } catch (error) {
+  } catch (error){
     res.status(500).json({ message: "Erro ao cadastrar a hidro", error });
   }
 };
-
-
 
 export const createHidrocord = async (req, res) => {
   const { hidroid, poligono } = req.body;

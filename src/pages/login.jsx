@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../style/App.css";
 import siapesq from "../img/siapesq.png";
 import { Link } from "react-router-dom";
@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 import connection from "../server/axios.mjs";
 import { useNavigate } from "react-router-dom";
-import { TokenContext } from "../context/TokenContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,13 +13,12 @@ export default function Login() {
   const [switcher, setSwitcher] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const { token, setToken } = useContext(TokenContext);
 
-  useEffect(() => {
-    if (localStorage.getItem("  ")) {
+  useEffect(() =>{
+    if(localStorage.getItem("userToken")){
       navigate("/");
     }
-  }, [navigate]);
+  },[]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -42,9 +40,9 @@ export default function Login() {
           return;
         }
 
-        setToken(res.data.token);
-        localStorage.setItem("userToken", token);
-        navigate("/");
+        localStorage.setItem("userToken", res.data.token);
+        localStorage.setItem("userId", res.data.id);
+         navigate("/");
       })
       .catch((err) => {
         setErrorMessage("Dados incorretos !");

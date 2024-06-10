@@ -21,7 +21,6 @@ input[type=number] {
 .header{
   background-color: #002244;
   color: white;
-  margin-bottom: 2%;
   display: flex;
   align-items: center;
   padding: 2rem;
@@ -204,11 +203,10 @@ h2 {
 
 .container-overlay-1{
   z-index: 2000;
-  width: 30rem;
+  width: 20rem;
   position: absolute;
   display: flex;
   align-items: center;
-  right: -14.2%;
   top: 30%;
 }
 
@@ -223,8 +221,7 @@ h2 {
 
 .floatDiv-addCordinates{
   width: 20rem;
-  height: 25rem;
-  background-color: red;
+  height: 27rem;  
   border: none;
   z-index: 2000;
   border-radius: 25px;
@@ -290,9 +287,12 @@ padding-top: 6px;
 .addPolygon{
   z-index: 2000;
   position: absolute;
-  right: 9.7%;
+  right: -.3%;
   bottom: 3.5%;
   padding: 0.5rem;
+  width: 21%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .addPolygon button{
@@ -313,7 +313,7 @@ padding-top: 6px;
   z-index: 2001;
 }
 
-.Modal-Cordinates{
+.Modal-Cordinates, .Modal-Error{
   z-index: 2001;
   position: fixed;
   top: 0;
@@ -332,6 +332,49 @@ padding-top: 6px;
   height: 70%;
   background-color: #DCDCDC;
   box-shadow: 0px 0px 177px 29px rgba(0,0,0,0.44);
+}
+
+.Modal-Error-Content{
+  border-radius: 10px;
+  width: 40%;
+  height: 20%;
+  background-color: #DCDCDC;
+  box-shadow: 0px 0px 177px 29px rgba(0,0,0,0.44);
+}
+
+.Modal-Error-Content header{
+  border-radius: 10px 10px 0px 0px;
+  background-color: #002244;
+  padding: 1rem 0rem 0.2rem 1rem;
+}
+
+.Modal-Error-Content header h2{
+  color: #880808;
+  font-size: 2rem;
+}
+
+.Modal-Error-Content section{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 50%;
+  padding: 1rem;
+}
+
+.Modal-Error-Content section button{
+  width: 13%;
+  padding: .4rem;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  position: absolute;
+  right: 5%;
+  bottom: .4%;
+  background-color: #880808;
+  color: white;
+  font-weight: bolder;
+  font-size: larger;
+  border: none;
 }
 
 .headerModal{

@@ -18,6 +18,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import L from "leaflet";
 import Modal from "react-modal";
+import ModalErrorContent from "../components/modalErrorContent";
+import connection from "../server/axios.mjs";
 
 Modal.setAppElement("#root");
 
@@ -34,6 +36,7 @@ export default function Index() {
   const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null); // Adicionando estado para rastrear o índice do polígono selecionado
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
+  const [modalErrorIsOpen,setModalErrorIsOpen] = useState(false);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -45,11 +48,21 @@ export default function Index() {
     document.querySelector("#root").style.filter = "blur(0px)";
   };
 
+  const openModalError = () => {
+    setModalErrorIsOpen(true)
+    document.querySelector("#root").style.filter = "blur(5px)";
+  };
+
+  const closeModalError = () => {
+    setModalErrorIsOpen(false);
+    document.querySelector("#root").style.filter = "blur(0px)";
+  };
+
   useEffect(() => {
-    if (!token) {
+    if(!localStorage.getItem("userToken")){
       navigate("/login");
     }
-  }, [navigate, token]);
+  }, [navigate]);
 
   useEffect(() => {
     if (mapLayers.length === 0) {
@@ -73,6 +86,7 @@ export default function Index() {
           title: "",
           id_type: "manual",
           id: _leaflet_id,
+          editing: true,
           latlngs: layer.getLatLngs()[0],
           center: center,
         },
@@ -90,6 +104,7 @@ export default function Index() {
         layers.map((l) => {
             return {
               ...l,
+              editing:true,
               latlngs: layer.getLatLngs()[0],
               center: layer.getCenter(),
             };
@@ -137,6 +152,7 @@ export default function Index() {
         title: "",
         id_type: "form",
         id: new Date().getTime(),
+        editing:true,
         latlngs: polygonCoords,
         center: L.latLngBounds(
           polygonCoords.map((coord) => L.latLng(coord.lat, coord.lng))
@@ -166,20 +182,33 @@ export default function Index() {
     setSelectSide(null);
   }
 
-  // Função para alterar a cor do polígono selecionado
-  const changePolygonColor = (index) => {
-    setMapLayers((prevLayers) => {
-      return prevLayers.map((layer, i) => {
-        if (i === index) {
-          // Se este for o polígono selecionado, definir a cor como vermelho
-          return { ...layer, color: "red", fillColor: "red" };
-        } else {
-          // Caso contrário, manter a cor original
-          return { ...layer, color: "blue", fillColor: "blue" };
-        }
-      });
-    });
-  };
+  const handleSavePolygonDB = () =>{
+    if(mapLayers.length === 0){
+      openModalError();
+      return;
+    }
+
+    if(mapLayers.some(element => element.title === "")){
+      openModalError();
+      return
+    }
+
+    mapLayers.forEach((element,index) =>{
+      if(element.editing){
+        connection.post("/crateHidro",{
+          "nome": element.title,
+          "iduser": localStorage.getItem("userId"),
+          "id": element.id
+        },
+        {
+          headers:{
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`
+          }
+        })
+      }
+      element.editing = false;
+    })
+  }
 
   return (
     <>
@@ -209,6 +238,7 @@ export default function Index() {
 
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
+          <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco</button>
           <button onClick={openModal}>
             Adicionar Polígono{" "}
             <span
@@ -223,6 +253,17 @@ export default function Index() {
           </button>
         </div>
         <div className="containerModal">
+          <Modal
+            isOpen={modalErrorIsOpen}
+            onRequestClose={closeModalError}
+            contentLabel="Ops, Ocorreu um erro..."
+            overlayClassName="Modal-Error"
+            className="Modal-Error-Content"
+          >
+             <ModalErrorContent
+              closer={closeModalError}
+             />
+          </Modal>
           <Modal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
@@ -275,7 +316,7 @@ export default function Index() {
         {/** card para edição dos polígonos*/}
         {mapLayers.length > 0 && (
           <div
-            style={{ right: visible ? "2.4%" : "-14.2%" }}
+            style={{ right: visible ? "2.4%" : "-12%" }}
             className="container-overlay-1"
           >
             <span onClick={() => setVisible(!visible)} className="ArrowPull">
@@ -292,8 +333,7 @@ export default function Index() {
                   const selectedIndex = parseInt(e.target.value);
                   setSelectPolygon(selectedIndex);
                   setSelectedPolygonIndex(selectedIndex);
-                  // Chamada para alterar a cor do polígono selecionado
-                  changePolygonColor(selectedIndex);
+                  
                 }}
               >
                 <option disabled selected>
@@ -323,6 +363,17 @@ export default function Index() {
               )}
               {selectSide !== null && (
                 <form className="form-lt-lg">
+                   <label>
+                    <span>Título da hidro</span>
+                    <input 
+                      type="text"
+                      value={mapLayers[selectPolygon].title}
+                      onChange={(e) => setMapLayers((previous) =>{
+                        previous[selectPolygon].title = e.target.value;
+                        return [...previous];
+                      })} 
+                    />
+                  </label>
                   <label>
                     <span>Latitude</span>
                     <input
@@ -333,6 +384,7 @@ export default function Index() {
                           mapLayers[selectPolygon].latlngs[selectSide].lat =
                             parseFloat(e.target.value);
                           previous[selectPolygon].center = handleCenter();
+                          previous[selectPolygon].editing = true;
                           setForceUpdate(forceUpdate + 1);
                           return [...previous];
                         })
@@ -349,6 +401,7 @@ export default function Index() {
                           mapLayers[selectPolygon].latlngs[selectSide].lng =
                             parseFloat(e.target.value);
                           previous[selectPolygon].center = handleCenter;
+                          previous[selectPolygon].editing = true;
                           setForceUpdate(forceUpdate + 1);
                           return [...previous];
                         })
@@ -364,7 +417,7 @@ export default function Index() {
         )}
         <MapContainer
           key={forceUpdate} // Forçar a re-renderização
-          style={{ width: "80%", height: "45rem", position: "relative" }}
+          style={{ width: "100%", height: "53.4rem", position: "relative" }}
           center={position}
           zoom={13}
           scrollWheelZoom={false}

@@ -15,9 +15,10 @@ router.get('/users' ,verificaLogin,getUsers)
 
 // Rota Hidro
 
-router.post('/teste',verificaLogin ,createHidro2)
-      .post('/teste2',verificaLogin, createHidrocord)
+router.post('/crateHidro',verificaLogin ,createHidro2)
+      .post('/createHidroCord',verificaLogin, createHidrocord)
       .get('/hidroUser',verificaLogin,hidroIndexByUserLog )
       .delete('/del',verificaLogin ,deleteHidro)
+      
 
 export default router
