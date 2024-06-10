@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 import connection from "../server/axios.mjs";
 import { useNavigate } from "react-router-dom";
-
+<link rel={siapesq} href="" />
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

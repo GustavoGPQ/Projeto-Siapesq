@@ -20,6 +20,8 @@ import Modal from "react-modal";
 import ModalErrorContent from "../components/modalErrorContent";
 import connection from "../server/axios.mjs";
 
+
+
 Modal.setAppElement("#root");
 
 
@@ -237,7 +239,16 @@ export default function Index() {
 
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
-          <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco</button>
+          <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco{" "}
+          <span
+              style={{
+                color: "green",
+                fontWeight: "bolder",
+                fontSize: "larger",
+              }}
+            >
+               +
+            </span></button>
           <button onClick={openModal}>
             Adicionar Polígono{" "}
             <span

@@ -276,6 +276,7 @@ select option{
   padding: .2rem;
   margin-bottom: 5%;
   width: 95%;
+  color: white;
 }
 
 .form-lt-lg h3{
@@ -471,11 +472,19 @@ padding-top: 6px;
 .go-to{
   z-index: 2000;
   position: absolute;
+ 
+  
 }
 
 .go-to select{
   padding: .4rem;
   font-size: larger;
+  
+ 
+}
+.ArrowPull{
+width: 24px;
+
 }
 
 @media only screen and (max-width:1440px){
