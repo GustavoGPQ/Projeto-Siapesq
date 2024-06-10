@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapContainer,
@@ -12,7 +12,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import { TokenContext } from "../context/TokenContext";
 import Header from "../components/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -23,8 +22,8 @@ import connection from "../server/axios.mjs";
 
 Modal.setAppElement("#root");
 
+
 export default function Index() {
-  const { token } = useContext(TokenContext);
   const [position, setPosition] = useState([-31.7642, -52.3376]);
   const navigate = useNavigate();
   const [mapLayers, setMapLayers] = useState([]);
