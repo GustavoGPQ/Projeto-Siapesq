@@ -33,7 +33,7 @@ export default function Index() {
   const [visible, setVisible] = useState(false);
   const [selectPolygon, setSelectPolygon] = useState(null);
   const [selectSide, setSelectSide] = useState(null);
-  const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null); // Adicionando estado para rastrear o índice do polígono selecionado
+  const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
   const [modalErrorIsOpen,setModalErrorIsOpen] = useState(false);
@@ -69,11 +69,48 @@ export default function Index() {
       setSelectSide(null);
       setSelectPolygon(null);
     }
-
-    if(mapLayers.length > 0){
-      console.log(mapLayers[0]);
-    }
   }, [mapLayers]);
+
+  //responsável por trazer todas as hidros quando a página for reatuazliada
+  useEffect(() =>{
+    connection.get("/gethidro",{
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+      }
+    })
+    .then((res) =>{
+      const hidros = res.data.hidro;
+      const hidroCordinates = res.data.hidroCord
+
+      for (let i = 0; i < hidros.length; i++) {
+        for (let j = 0; j < hidroCordinates.length; j++) {
+          if (hidros[i].id === hidroCordinates[j].hidroid){
+            const latitude = JSON.parse(hidroCordinates[j].latitude);
+            const longitude = JSON.parse(hidroCordinates[j].longitude);
+            let latlngs = [];
+      
+            for (let k = 0; k < latitude.length; k++) { 
+              latlngs.push({ lat: latitude[k], lng: longitude[k] });
+            }
+      
+            const bounds = L.latLngBounds(latlngs); 
+      
+            const newPolygon = {
+              title: hidros[i].nome,
+              id_type: "form",
+              id: hidros[i].id,
+              editing: false,
+              latlngs: latlngs,
+              center: bounds.getCenter()
+            }
+            setMapLayers((layers) => [...layers, newPolygon]);
+            console.log(mapLayers)
+          }
+        }
+      }
+    })
+
+  },[]);
 
   const _onCreate = (e) => {
     const { layerType, layer } = e;
@@ -168,6 +205,15 @@ export default function Index() {
   const handleRemovePolygon = (e) => {
     e.preventDefault();
     mapLayers.splice(selectPolygon, 1);
+
+    connection.post("/del",{
+      hidroId: mapLayers[selectPolygon].id
+    },{
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+      }
+    })
+    
     setForceUpdate(forceUpdate + 1);
     setForceEditDivUpdate(forceEditDivUpdate + 1);
     setSelectPolygon(null);
@@ -205,6 +251,27 @@ export default function Index() {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`
           }
         })
+
+        let cordenadasX = [];
+        let cordenadasY = [];
+
+        for(let i = 0; i < element.latlngs.length; i++){
+          cordenadasX.push(element.latlngs[i].lat);
+          cordenadasY.push(element.latlngs[i].lng);
+        }
+
+        connection.post("/createHidroCord",{
+          hidroid: element.id,
+          poligono:{
+           x: JSON.stringify(cordenadasX),
+           y: JSON.stringify(cordenadasY)
+          }
+        },
+      {
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`
+        }
+      })
       }
       element.editing = false;
     })

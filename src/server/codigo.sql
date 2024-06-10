@@ -24,7 +24,7 @@ CREATE TABLE hidro(
 CREATE TABLE hidrocord(
     id INT PRIMARY KEY AUTO_INCREMENT,
     hidroid INT NOT NULL,
-    latitude FLOAT,
-    longitude FLOAT,
+    latitude VARCHAR(1000),
+    longitude VARCHAR(1000),
     FOREIGN KEY (hidroid) REFERENCES hidro(id)
 );

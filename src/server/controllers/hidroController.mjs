@@ -16,6 +16,7 @@ export const createHidro2 = async (req, res) => {
     const hidroCadastrado = await dbKnex('hidro').insert({nome,iduser,id});
     res.status(200).json({ hidroCadastrado });
   } catch (error){
+    console.log(error);
     res.status(500).json({ message: "Erro ao cadastrar a hidro", error });
   }
 };
@@ -27,25 +28,21 @@ export const createHidrocord = async (req, res) => {
     return res.status(400).json({ message: "Forneça o ID da Hidro" });
   }
 
-  if (!poligono || !Array.isArray(poligono) || poligono.length === 0) {
+  if (!poligono || poligono.length === 0) {
     return res.status(400).json({ message: "Forneça as coordenadas do polígono" });
   }
 
-
   try {
-    const coordenadas = poligono.map(({ latitude, longitude }) => ({
-      hidroid,
-      latitude,
-      longitude
-    }));
 
-    console.log(coordenadas);
+    let latitude = poligono.x;
+    let longitude = poligono.y;
 
-    await dbKnex('hidrocord').insert(coordenadas);
+    await dbKnex('hidrocord').insert({hidroid,latitude,longitude});
 
     res.status(200).json({ message: "Coordenadas cadastradas com sucesso" });
   } catch (error) {
     res.status(500).json({ message: "Erro ao cadastrar as coordenadas", error });
+    console.log(error);
   }
 };
 
@@ -54,7 +51,9 @@ export const createHidrocord = async (req, res) => {
 //PUXAR HIDROELÉTRICAS CADASTRADAS//
 export const getHidro= async (req,res) => {
   const hidro = await dbKnex("hidro").select("*");
-  res.status(200).json({ hidro });
+  const hidroCord = await dbKnex("hidrocord").select("*");
+
+  res.status(200).json({hidro,hidroCord});
 
   if(!hidro){
     res.status(400).json({ message: "Nenhuma hidro cadastrado" });
@@ -78,6 +77,7 @@ export const deleteHidro = async (req, res) => {
           return res.status(401).json({ message: "Não autorizado" });
       }
 
+      await dbKnex("hidrocord").where({hidroid: hidroId}).del();
       await dbKnex("hidro").where({ id: hidroId }).del();
       
       res.status(200).json({ message: hidro });
