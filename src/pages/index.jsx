@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapContainer,
@@ -12,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
+import { TokenContext } from "../context/TokenContext";
 import Header from "../components/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -22,8 +23,8 @@ import connection from "../server/axios.mjs";
 
 Modal.setAppElement("#root");
 
-
 export default function Index() {
+  const { token } = useContext(TokenContext);
   const [position, setPosition] = useState([-31.7642, -52.3376]);
   const navigate = useNavigate();
   const [mapLayers, setMapLayers] = useState([]);
@@ -56,6 +57,19 @@ export default function Index() {
     setModalErrorIsOpen(false);
     document.querySelector("#root").style.filter = "blur(0px)";
   };
+
+  const removeDuplicates = (layers) =>{
+    const ids = new Set();
+    const uniqueLayers = [];
+
+    for (const layer of layers) {
+        if (!ids.has(layer.id)) {
+            ids.add(layer.id);
+            uniqueLayers.push(layer);
+        }
+    }
+    return uniqueLayers;
+  }
 
   useEffect(() => {
     if(!localStorage.getItem("userToken")){
@@ -107,6 +121,7 @@ export default function Index() {
           }
         }
       }
+      setMapLayers((layers) => removeDuplicates(layers));
     })
 
   },[]);
@@ -201,10 +216,14 @@ export default function Index() {
     }
   };
 
+  const handleExit = () =>{
+    localStorage.clear();
+    navigate("/login");
+  }
+
   const handleRemovePolygon = (e) => {
     e.preventDefault();
-    mapLayers.splice(selectPolygon, 1);
-
+    
     connection.post("/del",{
       hidroId: mapLayers[selectPolygon].id
     },{
@@ -213,6 +232,7 @@ export default function Index() {
       }
     })
     
+    mapLayers.splice(selectPolygon, 1);
     setForceUpdate(forceUpdate + 1);
     setForceEditDivUpdate(forceEditDivUpdate + 1);
     setSelectPolygon(null);
@@ -302,6 +322,11 @@ export default function Index() {
             </section>        
         }
 
+         {/*botão para saída do usuário*/}
+         <div className="exit">
+            <button className="exitButton" onClick={handleExit}>Sair</button>
+          </div>
+        {/*Card para adição de polígonos*/}
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
           <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco</button>

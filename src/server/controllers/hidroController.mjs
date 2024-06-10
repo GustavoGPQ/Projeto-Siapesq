@@ -74,6 +74,13 @@ export const deleteHidro = async (req, res) => {
       const hidro = await dbKnex("hidro").where({ id: hidroId }).first();
       console.log(hidro);
 
+      const hidroSearch = await dbKnex("hidro").select("*").where({id: hidroId})
+
+      if(hidroSearch.length === 0){
+        return;
+      }
+      
+
       if (req.usuario !== hidro?.iduser) {
           return res.status(401).json({ message: "Não autorizado" });
       }

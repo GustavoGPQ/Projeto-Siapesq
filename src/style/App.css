@@ -478,6 +478,25 @@ padding-top: 6px;
   font-size: larger;
 }
 
+.exit{
+  position: absolute;
+  z-index: 2006;
+  bottom: 4%;
+  left: 3%;
+}
+
+.exit .exitButton{
+  background-color:#880808;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 1rem;
+  cursor: pointer;
+  width: 8rem;
+  font-size: medium;
+  font-weight: bolder;
+}
+
 @media only screen and (max-width:1440px){
   .registro-container{
     width: 36%;
