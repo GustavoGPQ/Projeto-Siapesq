@@ -37,6 +37,7 @@ export default function Index() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
   const [modalErrorIsOpen,setModalErrorIsOpen] = useState(false);
+  const [city,setCity] = useState("");
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -95,29 +96,31 @@ export default function Index() {
       const hidros = res.data.hidro;
       const hidroCordinates = res.data.hidroCord
 
-      for (let i = 0; i < hidros.length; i++) {
-        for (let j = 0; j < hidroCordinates.length; j++) {
-          if (hidros[i].id === hidroCordinates[j].hidroid){
-            const latitude = JSON.parse(hidroCordinates[j].latitude);
-            const longitude = JSON.parse(hidroCordinates[j].longitude);
-            let latlngs = [];
-      
-            for (let k = 0; k < latitude.length; k++) { 
-              latlngs.push({ lat: latitude[k], lng: longitude[k] });
+      if(hidros && hidroCordinates){
+        for (let i = 0; i < hidros.length; i++) {
+          for (let j = 0; j < hidroCordinates.length; j++) {
+            if (hidros[i].id === hidroCordinates[j].hidroid){
+              const latitude = JSON.parse(hidroCordinates[j].latitude);
+              const longitude = JSON.parse(hidroCordinates[j].longitude);
+              let latlngs = [];
+        
+              for (let k = 0; k < latitude.length; k++) { 
+                latlngs.push({ lat: latitude[k], lng: longitude[k] });
+              }
+        
+              const bounds = L.latLngBounds(latlngs); 
+        
+              const newPolygon = {
+                title: hidros[i].nome,
+                id_type: "form",
+                id: hidros[i].id,
+                editing: false,
+                latlngs: latlngs,
+                center: bounds.getCenter()
+              }
+              setMapLayers((layers) => [...layers, newPolygon]);
+              console.log(mapLayers)
             }
-      
-            const bounds = L.latLngBounds(latlngs); 
-      
-            const newPolygon = {
-              title: hidros[i].nome,
-              id_type: "form",
-              id: hidros[i].id,
-              editing: false,
-              latlngs: latlngs,
-              center: bounds.getCenter()
-            }
-            setMapLayers((layers) => [...layers, newPolygon]);
-            console.log(mapLayers)
           }
         }
       }
@@ -197,6 +200,20 @@ export default function Index() {
     }
   };
 
+  const handleSelectedCity = (e) =>{
+    e.preventDefault();
+    setCity((previous) =>{
+      previous.charAt(0).toUpperCase();
+      return previous;
+    })
+    connection.get(`https://geocode.xyz/${city}?json=1&auth=176887045821824231851x65662`)
+    .then((res) =>{
+      setPosition([res.data.latt,res.data.longt]);
+      setForceUpdate(forceUpdate + 1);
+    })
+    
+  }
+
   const handleSavePolygon = () => {
     if (polygonCoords.length >= 3) {
       const newPolygon = {
@@ -256,6 +273,11 @@ export default function Index() {
     if(mapLayers.some(element => element.title === "")){
       openModalError();
       return
+    }
+
+    if(mapLayers.every(element => element.editing === false)){
+      openModalError();
+      return;
     }
 
     mapLayers.forEach((element,index) =>{
@@ -326,7 +348,20 @@ export default function Index() {
          <div className="exit">
             <button className="exitButton" onClick={handleExit}>Sair</button>
           </div>
-        {/*Card para adição de polígonos*/}
+
+          {/*Seleção de cidade*/}
+          <div className="city">
+            <form onSubmit={handleSelectedCity}>
+              <input 
+                type="text"
+                value={city}
+                onChange={e => setCity(e.target.value)}
+                placeholder="Digite a cidade"
+                />
+              <button type="submit">Selecionar</button>
+            </form>
+          </div>
+
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
           <button onClick={handleSavePolygonDB}>Adicionar Polígono ao Banco</button>
