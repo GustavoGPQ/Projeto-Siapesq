@@ -499,6 +499,43 @@ padding-top: 6px;
   font-weight: bolder;
 }
 
+.city{
+  z-index: 2001;
+  position: absolute;
+  left: 7%;
+  top: 2%;
+  height: 9%;
+}
+
+.city form{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.city form input{
+  padding: .4rem;
+  border-radius: 6px;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: #C0C0C0 solid;
+  outline: none;
+}
+
+.city form button{
+  width: 60%;
+  padding: .4rem;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  background-color: #50C878;
+  color: white;
+  font-weight: bold;
+}
+
 @media only screen and (max-width:1440px){
   .registro-container{
     width: 36%;
@@ -508,9 +545,18 @@ padding-top: 6px;
   }
 }
 
-@media only screen and (max-width:1920px){
+@media only screen and (min-width:1920px){
   .addPolygon{
     width: 27%;
+  }
+  .Modal-Error-Content{
+    height: 27%;
+  }
+}
+
+@media only screen and (min-width:1000px){
+  .addPolygon{
+    width: 35%;
   }
   .Modal-Error-Content{
     height: 27%;

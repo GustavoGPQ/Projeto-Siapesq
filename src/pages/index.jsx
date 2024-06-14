@@ -36,7 +36,8 @@ export default function Index() {
   const [selectedPolygonIndex, setSelectedPolygonIndex] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [forceEditDivUpdate, setForceEditDivUpdate] = useState(0);
-  const [modalErrorIsOpen, setModalErrorIsOpen] = useState(false);
+  const [modalErrorIsOpen,setModalErrorIsOpen] = useState(false);
+  const [city,setCity] = useState("");
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -85,46 +86,48 @@ export default function Index() {
   }, [mapLayers]);
 
   //responsável por trazer todas as hidros quando a página for reatuazliada
-  useEffect(() => {
-    connection
-      .get("/gethidro", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      })
-      .then((res) => {
-        const hidros = res.data.hidro;
-        const hidroCordinates = res.data.hidroCord;
+  useEffect(() =>{
+    connection.get("/gethidro",{
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+      }
+    })
+    .then((res) =>{
+      const hidros = res.data.hidro;
+      const hidroCordinates = res.data.hidroCord
 
+      if(hidros && hidroCordinates){
         for (let i = 0; i < hidros.length; i++) {
           for (let j = 0; j < hidroCordinates.length; j++) {
-            if (hidros[i].id === hidroCordinates[j].hidroid) {
+            if (hidros[i].id === hidroCordinates[j].hidroid){
               const latitude = JSON.parse(hidroCordinates[j].latitude);
               const longitude = JSON.parse(hidroCordinates[j].longitude);
               let latlngs = [];
-
-              for (let k = 0; k < latitude.length; k++) {
+        
+              for (let k = 0; k < latitude.length; k++) { 
                 latlngs.push({ lat: latitude[k], lng: longitude[k] });
               }
-
-              const bounds = L.latLngBounds(latlngs);
-
+        
+              const bounds = L.latLngBounds(latlngs); 
+        
               const newPolygon = {
                 title: hidros[i].nome,
                 id_type: "form",
                 id: hidros[i].id,
                 editing: false,
                 latlngs: latlngs,
-                center: bounds.getCenter(),
-              };
+                center: bounds.getCenter()
+              }
               setMapLayers((layers) => [...layers, newPolygon]);
-              console.log(mapLayers);
+              console.log(mapLayers)
             }
           }
         }
-        setMapLayers((layers) => removeDuplicates(layers));
-      });
-  }, []);
+      }
+      setMapLayers((layers) => removeDuplicates(layers));
+    })
+
+  },[]);
 
   const _onCreate = (e) => {
     const { layerType, layer } = e;
@@ -196,6 +199,20 @@ export default function Index() {
     }
   };
 
+  const handleSelectedCity = (e) =>{
+    e.preventDefault();
+    setCity((previous) =>{
+      previous.charAt(0).toUpperCase();
+      return previous;
+    })
+    connection.get(`https://geocode.xyz/${city}?json=1&auth=176887045821824231851x65662`)
+    .then((res) =>{
+      setPosition([res.data.latt,res.data.longt]);
+      setForceUpdate(forceUpdate + 1);
+    })
+    
+  }
+
   const handleSavePolygon = () => {
     if (polygonCoords.length >= 3) {
       const newPolygon = {
@@ -262,6 +279,11 @@ export default function Index() {
     }
 
     if (mapLayers.some((element) => element.title === "")) {
+      openModalError();
+      return;
+    }
+
+    if(mapLayers.every(element => element.editing === false)){
       openModalError();
       return;
     }
@@ -341,13 +363,24 @@ export default function Index() {
           </section>
         )}
 
-        {/*botão para saída do usuário*/}
-        <div className="exit">
-          <button className="exitButton" onClick={handleExit}>
-            Sair
-          </button>
-        </div>
-        {/*Card para adição de polígonos*/}
+         {/*botão para saída do usuário*/}
+         <div className="exit">
+            <button className="exitButton" onClick={handleExit}>Sair</button>
+          </div>
+
+          {/*Seleção de cidade*/}
+          <div className="city">
+            <form onSubmit={handleSelectedCity}>
+              <input 
+                type="text"
+                value={city}
+                onChange={e => setCity(e.target.value)}
+                placeholder="Digite a cidade"
+                />
+              <button type="submit">Selecionar</button>
+            </form>
+          </div>
+
         {/*Card para adição de polígonos*/}
         <div className="addPolygon">
           <button onClick={handleSavePolygonDB}>
